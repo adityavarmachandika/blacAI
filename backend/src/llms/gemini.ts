@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Request,Response } from 'express';
 import { Error } from 'postgres';
-
+import storeToDatabase from '../utils/db_send';
 type ChatMessage = {
   threadId: string;
   role: 'user' | 'assistant' | 'system';
@@ -47,7 +47,8 @@ async function chatWithGemini(req:Request, res:Response) {
 
   geminiRes.data.on('end', () => {
     res.write("event: done by gemini\n\n");
-    
+    storeToDatabase(thread_id, prompt, 'mistral-small','user')
+    storeToDatabase(thread_id, totalOutput, 'mistral-small','assistant');
     res.end();
   });
 

@@ -2,9 +2,9 @@ import { v4 as uuidv4} from "uuid";
 import { db } from "../db";
 import { messages,threads } from "../db/schema";
 
-const storeToDatabase=async (thread_id:string,content:string,model:string)=>{
+const storeToDatabase=async (thread_id:string,content:string,model:string,user:string)=>{
     let threadId=thread_id
-    if(thread_id==null){
+    if(thread_id=='' || thread_id==null){
         threadId = uuidv4(); // Generate a new thread ID if not provided
         const threadDetails={
             id:threadId,
@@ -19,7 +19,7 @@ const storeToDatabase=async (thread_id:string,content:string,model:string)=>{
 
     const messageDetails = {
         id: uuidv4(),
-        role: 'user',
+        role: user,
         content: content,
         isStreaming: true,
         tokens: 0, // Placeholder, you can calculate tokens if needed
