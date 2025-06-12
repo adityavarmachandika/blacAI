@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const axios_1 = __importDefault(require("axios"));
+const db_send_1 = __importDefault(require("../utils/db_send"));
 dotenv_1.default.config();
 const chatWithMistral = async (req, res) => {
     const promptData = req.body;
@@ -21,6 +22,7 @@ const chatWithMistral = async (req, res) => {
             },
         });
         //parsing the response json
+        let totalOutput = '';
         let buffer = '';
         response.data.on('data', (chunk) => {
             buffer += chunk.toString();
@@ -37,9 +39,10 @@ const chatWithMistral = async (req, res) => {
                 }
                 try {
                     const parsed = JSON.parse(jsonStr);
-                    const prompt = parsed?.choices?.[0]?.delta?.content;
-                    if (prompt) {
-                        const payload = { role: 'assistant', prompt };
+                    const output = parsed?.choices?.[0]?.delta?.content;
+                    if (output) {
+                        const payload = { role: 'assistant', output };
+                        totalOutput += output;
                         res.write(`data: ${JSON.stringify(payload)}\n\n`);
                     }
                 }
@@ -48,8 +51,9 @@ const chatWithMistral = async (req, res) => {
                 }
             }
         });
-        response.data.on('end', () => {
+        response.data.on('end', async () => {
             res.write("event: done\n\n");
+            (0, db_send_1.default)(promptData.threadId, totalOutput, 'mistral-small');
             res.end();
         });
         response.data.on('error', (err) => {

@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 async function chatWithGemini(req, res) {
-    const { role, prompt } = req.body;
+    const { role, prompt, thread_id } = req.body;
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
@@ -22,6 +22,7 @@ async function chatWithGemini(req, res) {
         },
         responseType: 'stream'
     });
+    let totalOutput = '';
     geminiRes.data.on('data', (chunk) => {
         const lines = chunk.toString().split('\n').filter(line => line.startsWith('data: '));
         for (const line of lines) {
@@ -29,12 +30,13 @@ async function chatWithGemini(req, res) {
             const parsed = JSON.parse(json);
             const content = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
             if (content) {
+                totalOutput += content;
                 res.write(`data: ${JSON.stringify({ role: 'assistant', content })}\n\n`);
             }
         }
     });
     geminiRes.data.on('end', () => {
-        res.write("event: done\n\n");
+        res.write("event: done by gemini\n\n");
         res.end();
     });
     geminiRes.data.on('error', (err) => {

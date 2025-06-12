@@ -1,9 +1,10 @@
 import { Express, Request, Response } from "express";
 import dotenv from 'dotenv';
 import axios from "axios";
-
+import storeToDatabase from "../utils/db_send";
 dotenv.config();
 type ChatMessage = {
+  threadId: string;
   role: 'user' | 'assistant' | 'system';
   prompt: string;
 };
@@ -30,7 +31,8 @@ const chatWithMistral = async (req: Request, res: Response) => {
       }
     );
     //parsing the response json
-
+    
+    let totalOutput='';
     let buffer:string='';
     response.data.on('data', (chunk: Buffer) => {
 
@@ -52,9 +54,10 @@ const chatWithMistral = async (req: Request, res: Response) => {
 
         try {
           const parsed = JSON.parse(jsonStr);
-          const prompt = parsed?.choices?.[0]?.delta?.content;
-          if (prompt) {
-            const payload: ChatMessage = { role: 'assistant', prompt };
+          const output = parsed?.choices?.[0]?.delta?.content;
+          if (output) {
+            const payload = { role: 'assistant', output };
+            totalOutput += output;
             res.write(`data: ${JSON.stringify(payload)}\n\n`);
           }
         } catch (err) {
@@ -63,8 +66,9 @@ const chatWithMistral = async (req: Request, res: Response) => {
       }
     });
 
-    response.data.on('end', () => {
+    response.data.on('end', async() => {
       res.write("event: done\n\n");
+      storeToDatabase(promptData.threadId, totalOutput, 'mistral-small');
       res.end();
     });
 

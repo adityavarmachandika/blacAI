@@ -2,20 +2,25 @@ import express from "express";
 import { Request,Response } from "express";
 import chatWithGemini from "../llms/gemini";
 import chatWithMistral from "../llms/mistral";
-
+import fetchSingleThread from "../utils/fetch_single_thread";
 const router= express.Router()
 
-router.post('/',(req:Request,res:Response)=>{
+router.post('/',async(req:Request,res:Response)=>{
 
     const {model}=req.body;
 
     switch(model.toLowerCase()){
         case 'gemini 2.0 flash':
-            chatWithGemini(req,res)
+            await chatWithGemini(req,res)
+            break;
         case 'mistral':
-            chatWithMistral(req,res)
+            await chatWithMistral(req,res)
+            break;
+        default:
+            res.status(400).json({error: 'Unsupported model'});
     }
 })
 
+router.get('/:id',fetchSingleThread);
 
 export default router

@@ -1,8 +1,7 @@
 import { Request,Response } from "express"
-import { uuid } from "drizzle-orm/pg-core"
 import { db } from "../db";
 import { apiConfigs } from "../db/schema"
-import { UUIDTypes, v4 as uuidv4 } from 'uuid';
+import {  v4 as uuidv4 } from 'uuid';
 
 
 interface messageInstance{
