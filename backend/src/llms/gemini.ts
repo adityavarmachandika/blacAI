@@ -45,10 +45,10 @@ async function chatWithGemini(req:Request, res:Response) {
     }
   });
 
-  geminiRes.data.on('end', () => {
+  geminiRes.data.on('end', async() => {
     res.write("event: done by gemini\n\n");
-    storeToDatabase(thread_id, prompt, 'mistral-small','user')
-    storeToDatabase(thread_id, totalOutput, 'mistral-small','assistant');
+    const promptThread=await storeToDatabase(thread_id, prompt, "gemini 2.0 flash",'user')
+    await storeToDatabase(promptThread, totalOutput, "gemini 2.0 flash",'assistant');
     res.end();
   });
 

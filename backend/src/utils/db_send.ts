@@ -35,6 +35,7 @@ const storeToDatabase=async (thread_id:string,content:string,model:string,user:s
         .catch((error) => {
             console.error("Error storing message:", error);
         });
+    return threadId; // Return the thread ID for further use
 }
 
 export default storeToDatabase;

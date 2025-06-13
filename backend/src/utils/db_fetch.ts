@@ -29,4 +29,4 @@ const fetchAllThreads = async (req: Request, res: Response):Promise<void> => {
 
     res.status(200).json(allThreads)
 }
-export default fetchSingleThread,fetchAllThreads;
+export default fetchSingleThread

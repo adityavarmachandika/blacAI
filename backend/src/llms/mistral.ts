@@ -68,8 +68,8 @@ const chatWithMistral = async (req: Request, res: Response) => {
 
     response.data.on('end', async() => {
       res.write("event: done\n\n");
-      storeToDatabase(promptData.threadId, promptData.prompt, 'mistral-small','user')
-      storeToDatabase(promptData.threadId, totalOutput, 'mistral-small','assistant');
+      const promptThread=await storeToDatabase(promptData.threadId, promptData.prompt, 'mistral-small','user')
+      storeToDatabase(promptThread, totalOutput, 'mistral-small','assistant');
       res.end();
     });
 

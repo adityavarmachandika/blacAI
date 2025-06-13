@@ -3,6 +3,7 @@ import { Request,Response } from "express";
 import chatWithGemini from "../llms/gemini";
 import chatWithMistral from "../llms/mistral";
 import fetchSingleThread from "../utils/db_fetch";
+
 const router= express.Router()
 
 router.post('/',async(req:Request,res:Response)=>{
@@ -21,6 +22,6 @@ router.post('/',async(req:Request,res:Response)=>{
     }
 })
 
-router.get('/:id',fetchSingleThread);
+router.get('/:id', fetchSingleThread);
 
 export default router
