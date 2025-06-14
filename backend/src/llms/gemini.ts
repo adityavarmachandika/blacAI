@@ -11,8 +11,7 @@ type ChatMessage = {
 async function chatWithGemini(req:Request, res:Response) {
 
 
-  const {role,prompt,thread_id}=req.body
-  
+  const {role,prompt,thread_id,userId}=req.body
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -47,8 +46,10 @@ async function chatWithGemini(req:Request, res:Response) {
 
   geminiRes.data.on('end', async() => {
     res.write("event: done by gemini\n\n");
-    const promptThread=await storeToDatabase(thread_id, prompt, "gemini 2.0 flash",'user')
-    await storeToDatabase(promptThread, totalOutput, "gemini 2.0 flash",'assistant');
+    const promptThread=await storeToDatabase(thread_id, prompt, "gemini 2.0 flash",'user', userId);
+    if (promptThread) {
+    await storeToDatabase(promptThread, totalOutput, "gemini 2.0 flash",'assistant', userId);
+    }
     res.end();
   });
 

@@ -9,6 +9,7 @@ export const threads = pgTable('threads', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   systemPrompt: text('system_prompt'),
   isArchived: boolean('is_archived').default(false).notNull(),
+  userId: uuid('user_id').references(() => user_details.google_id, { onDelete: 'cascade' }).notNull(),
 });
 
 // Messages table
@@ -29,8 +30,8 @@ export const apiConfigs = pgTable('api_configs', {
   provider: text('provider').notNull(),
   apiKey: text('api_key').notNull(),
   model: text('model').notNull(),
-  isDefault: boolean('is_default').default(false).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  userId: uuid('user_id').references(() => user_details.google_id, { onDelete: 'cascade' }).notNull(),
 });
 
 // Attachments
@@ -44,6 +45,11 @@ export const attachments = pgTable('attachments', {
   messageId: uuid('message_id').references(() => messages.id, { onDelete: 'cascade' }).notNull(),
 });
 
+export const user_details=pgTable('user_details', {
+  google_id: uuid('id').primaryKey(), // generate manually
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+})
 // Relations
 export const threadsRelations = relations(threads, ({ many }) => ({
   messages: many(messages),
