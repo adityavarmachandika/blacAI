@@ -1,7 +1,7 @@
 import { Express, Request, Response } from "express";
 import dotenv from 'dotenv';
 import axios from "axios";
-import storeToDatabase from "../utils/db_send";
+import {storeToDatabase} from "../chat_route/chat_controllers";
 dotenv.config();
 type ChatMessage = {
   threadId: string;

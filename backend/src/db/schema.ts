@@ -31,7 +31,7 @@ export const apiConfigs = pgTable('api_configs', {
   apiKey: text('api_key').notNull(),
   model: text('model').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-  userId: uuid('user_id').references(() => user_details.google_id, { onDelete: 'cascade' }).notNull(),
+  user_id: uuid('user_id').references(() => user_details.google_id, { onDelete: 'cascade' }).notNull(),
 });
 
 // Attachments

@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { Request } from 'express'
 import api_router from './api_route/api_index'
-import chat_router from './chat_route/store'
+import chat_router from './chat_route/chat_index'
 
 const app= express()
 

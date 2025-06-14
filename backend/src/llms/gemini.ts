@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Request,Response } from 'express';
 import { Error } from 'postgres';
-import storeToDatabase from '../utils/db_send';
+import {storeToDatabase} from '../chat_route/chat_controllers';
 type ChatMessage = {
   threadId: string;
   role: 'user' | 'assistant' | 'system';

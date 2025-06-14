@@ -5,5 +5,4 @@ const router = express.Router();
 router.post('/',get_keys);
 router.get('/:user_id', display_apis);
 
-
 export default router;
