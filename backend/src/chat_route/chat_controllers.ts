@@ -5,9 +5,10 @@ import { messages, threads } from '../db/schema';
 import { eq, desc, is } from 'drizzle-orm';
 import chatWithGemini from '../llms/gemini';
 import chatWithMistral from '../llms/mistral';
-import { timestamp } from "drizzle-orm/gel-core";
+
+
 const fetchSingleThread = async (req: Request, res: Response):Promise<void> => {  
-    const threadId =req.params.threadId;
+    const thread_id =req.params.thread_id;
     const latestMessages = await db
     .select({role:messages.role,
         content:messages.content,
@@ -15,7 +16,7 @@ const fetchSingleThread = async (req: Request, res: Response):Promise<void> => {
         timestamp: messages.timestamp,
     })
     .from(messages)
-    .where(eq(messages.id, threadId))
+    .where(eq(messages.thread_id, thread_id))
     .orderBy(desc(messages.timestamp))
     .limit(30);
 
@@ -63,7 +64,7 @@ const storeToDatabase=async (thread_id:string,content:string,model:string,user:s
         tokens: 0, // Placeholder, you can calculate tokens if needed
         timestamp: new Date(),
         model: model,
-        threadId: threadId,
+        thread_id: thread_id,
     };
 
     await db.insert(messages).values(messageDetails)

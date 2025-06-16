@@ -5,7 +5,7 @@ const router= express.Router()
 
 router.post('/',chatWithModels)
 
-router.get('/:id', fetchSingleThread);
+router.get('/:thread_id', fetchSingleThread);
 
 router.get('/get_threads/:userId',fetchAllThreads)
 export default router

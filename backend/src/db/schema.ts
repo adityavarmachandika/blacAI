@@ -21,7 +21,7 @@ export const messages = pgTable('messages', {
   tokens: integer('tokens'),
   timestamp: timestamp('timestamp', { withTimezone: true }).defaultNow().notNull(),
   model: text('model'),
-  threadId: uuid('thread_id').references(() => threads.id, { onDelete: 'cascade' }).notNull(),
+  thread_id: uuid('thread_id').references(() => threads.id, { onDelete: 'cascade' }).notNull(),
 });
 
 // API Configs
@@ -57,7 +57,7 @@ export const threadsRelations = relations(threads, ({ many }) => ({
 
 export const messagesRelations = relations(messages, ({ one, many }) => ({
   thread: one(threads, {
-    fields: [messages.threadId],
+    fields: [messages.thread_id],
     references: [threads.id],
   }),
   attachments: many(attachments),
