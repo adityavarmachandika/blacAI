@@ -3,27 +3,22 @@ import dotenv from 'dotenv';
 import axios from "axios";
 import {storeToDatabase} from "../chat_route/chat_controllers";
 dotenv.config();
-type ChatMessage = {
-  threadId: string;
-  role: 'user' | 'assistant' | 'system';
-  prompt: string;
-  userId:string
-};
+
 
 const chatWithMistral = async (req: Request, res: Response) => {
 
   
-  const promptData: ChatMessage = req.body;
+    const {role,prompt,thread_id,userId}=req.body
 
-  if(promptData.userId=== undefined)
-  res.json({error: 'User ID is required'});
+  if(userId=== undefined)
+    return res.json({error: 'User ID is required'});
   try{
     const response = await axios.post(
       'https://api.mistral.ai/v1/chat/completions',
       {
         model: 'mistral-small',
         stream: true,
-        messages: [{ role: 'user', content: promptData.prompt }],
+        messages: [{ role: 'user', content: prompt }],
       },
       {
         responseType: 'stream',
@@ -71,8 +66,8 @@ const chatWithMistral = async (req: Request, res: Response) => {
 
     response.data.on('end', async() => {
       res.write("event: done\n\n");
-      const promptThread=await storeToDatabase(promptData.threadId, promptData.prompt, 'mistral-small','user',promptData.userId)
-      storeToDatabase(promptThread, totalOutput, 'mistral-small','assistant',promptData.userId);
+      const promptThread=await storeToDatabase(thread_id, prompt, 'mistral-small','user',userId)
+      storeToDatabase(promptThread, totalOutput, 'mistral-small','assistant',userId);
       res.end();
     });
 

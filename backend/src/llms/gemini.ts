@@ -12,9 +12,6 @@ async function chatWithGemini(req:Request, res:Response) {
 
 
   const {role,prompt,thread_id,userId}=req.body
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
 
   const geminiRes = await axios({
     method: 'POST',

@@ -6,14 +6,19 @@ import { eq, desc, is } from 'drizzle-orm';
 import chatWithGemini from '../llms/gemini';
 import chatWithMistral from '../llms/mistral';
 
+// messages: "message_id, role, content, isStreaming, timestamp, model, thread_id",
 
 const fetchSingleThread = async (req: Request, res: Response):Promise<void> => {  
     const thread_id =req.params.thread_id;
     const latestMessages = await db
-    .select({role:messages.role,
+    .select({
+        message_id:messages.id,
+        role:messages.role,
         content:messages.content,
-        model:messages.model,
+        isStreaming:messages.isStreaming,
         timestamp: messages.timestamp,
+        model:messages.model,
+        thread_idL: messages.thread_id,
     })
     .from(messages)
     .where(eq(messages.thread_id, thread_id))
@@ -23,12 +28,13 @@ const fetchSingleThread = async (req: Request, res: Response):Promise<void> => {
     res.status(200).json(latestMessages)
 }
 
+//      threads: "thread_id, title, updated_at, isArchived",
 const fetchAllThreads = async (req: Request, res: Response):Promise<void> => {
     const allThreads = await db
-    .select({id:threads.id,
+    .select({thread_id:threads.id,
        title:threads.title,
-       created_at:threads.createdAt,
-       is_archived:threads.isArchived,})
+       updated_at:threads.updatedAt,
+       isArchived:threads.isArchived,})
     .from(threads)
     .where(eq(threads.userId,req.params.userId))
     .orderBy(desc(threads.updatedAt))
@@ -64,7 +70,7 @@ const storeToDatabase=async (thread_id:string,content:string,model:string,user:s
         tokens: 0, // Placeholder, you can calculate tokens if needed
         timestamp: new Date(),
         model: model,
-        thread_id: thread_id,
+        thread_id: threadId,
     };
 
     await db.insert(messages).values(messageDetails)
